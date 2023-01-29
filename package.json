@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "axios": "^1.2.6",
+    "guessit-exec": "^0.0.1",
+    "pump": "^3.0.0",
+    "unzipper": "^0.10.11",
+    "yargs": "^17.6.2"
+  },
+  "bin": {
+    "yifysub": "./index.js"
+  },
+  "name": "yifysub2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
