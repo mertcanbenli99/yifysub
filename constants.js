@@ -1,8 +1,8 @@
 const constants = {
   searchUrl: "https://yts-subs.com/search/",
-  baseUrl: "https://yts-subs.com/",
-  subtitleUrl: "https://yifysubtitles.org/subtitle/",
-  imdbRegex: "movie-imdb/tt",
+  baseUrl: "https://yifysubtitles.org/",
+  subtitleUrl: "https://yifysubtitles.ch/subtitle/",
+  imdbRegex: /movie-imdb\/tt\d+/,
   subtitleIdRegex: /\d+-english-yify-\d+/
 }
 

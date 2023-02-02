@@ -17,34 +17,41 @@ const argv = yargs
       .option("language", {
         alias: "l",
         describe: "Language of the file to download",
-        default: "en",
+        default: "english",
       })
       .positional("filename", {
         describe: "Name of the file to download",
         demandOption: true,
         type: "string",
+        
       });
   })
   .demandCommand(1, "You need at least one command before moving on")
   .help().argv;
 
 const fileName = argv._[1]; // parse command line argument and get fileName
-const language = argv.language
+const language = argv.language;
 
 
 guessit(fileName)
   .then(async (data) => {
     const responseData = await getData(`${constants.searchUrl}${data.title}`);
     const searchString = stringUtils.findSearchString(responseData);
+   
+    
 
     const response = await getData(`${constants.baseUrl}${searchString}`);
+   
 
-    const subtitleURL = stringUtils.findSubtitleUrl(response, data.title);
+    const subtitleURL = stringUtils.findSubtitleUrl(response, data.title, language);
+   
+    
+   
+
 
     await getSubtitle(subtitleURL, fileName);
-    console.log(__dirname, __filename);
     await extractFile(`${fileName}.zip`, "./");
-    process.stdout.write('true')
+    process.stdout.write('true');
   })
   .catch((e) => console.log(e));
 
