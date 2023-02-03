@@ -1,34 +1,35 @@
 local mp = require('mp')
 
-
-
-
-function log(string, secs)
+local function log(string, secs)
     secs = secs or 2.5
     mp.msg.warn(string)
     mp.osd_message(string, secs)
 end
 
-function showmenu()
+local function showmenu()
     local opts = { "English", "Turkish", "German", "Dutch" }
-    local args = {"zenity", "--list", "--text=Menu", "--column=Options"}
+    local args = { "zenity", "--list", "--text=Menu", "--column=Options" }
     for _, opt in ipairs(opts) do
         table.insert(args, opt)
     end
     local cmd = table.concat(args, " ")
 
     local pipe = io.popen(cmd, "r")
-    local choice = pipe:read("*all")
-    pipe:close()
-    return choice
+    if pipe then
+        local choice = pipe:read("*all")
+        pipe:close()
+        return choice
+    end
 
 end
 
-function download_subtitle()
+local function download_subtitle()
     local language = string.lower(showmenu())
-    local filename = mp.get_property("path")
-    print("yifysub download " .. filename .. "-l " ..language)
-    local handle = io.popen("yifysub download " .. filename .. " -l " ..language)
+
+    local filename = tostring(mp.get_property("path"))
+
+    local handle = io.popen("yifysub download \"" .. filename .. "\" -l " .. language)
+
     if handle then
         local result = handle:read("*all")
         local last_line = string.match(result, "([^\n]+)$")
@@ -44,5 +45,3 @@ function download_subtitle()
 end
 
 mp.add_key_binding('g', 'Download-a-subtitle', download_subtitle)
-
-
