@@ -88,7 +88,7 @@ async function extractFile(filePath, extractPath) {
   });
   console.log("Subtitle zip extracted successfully!");
   try {
-    await util.promisify(fs.unlink)(`./${fileName}.zip`);
+    await util.promisify(fs.unlink)(`${fileName}.zip`);
     console.log(`${fileName}.zip was deleted`);
   } catch (err) {
     console.error(err);
