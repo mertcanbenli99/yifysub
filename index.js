@@ -7,10 +7,11 @@ const fs = require("fs");
 const stream = require("stream");
 const util = require("util");
 const unzipper = require("unzipper");
-const urlConstants = require("./constants");
 const stringUtils = require("./utils");
 const constants = require("./constants");
 const path = require("path");
+const { readdir } = require("fs/promises");
+const languageEncoding = require("detect-file-encoding-and-language");
 
 const argv = yargs
   .command("download", "Download a file", (yargs) => {
@@ -52,6 +53,11 @@ guessit(fileName)
 
     await getSubtitle(subtitleURL, fileName);
     await extractFile(`${fileName}.zip`);
+    const subtitleFileName = await findByFileExtension();
+    languageEncoding(subtitleFileName).then((fileInfo) =>
+      console.log(fileInfo)
+    );
+
     process.stdout.write("true");
   })
   .catch((e) => console.log(e));
@@ -95,5 +101,16 @@ async function extractFile(filePath) {
     console.log(`${fileName}.zip was deleted`);
   } catch (err) {
     console.error(err);
+  }
+}
+
+async function findByFileExtension(ext = "srt") {
+  const files = await readdir(dirName);
+  for await (const file of files) {
+    const fileExt = path.extname(file);
+
+    if (fileExt === `.${ext}`) {
+      return file;
+    }
   }
 }
