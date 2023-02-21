@@ -11,11 +11,14 @@ const constants = require('./constants');
 
  function findSubtitleUrl(responseData, movieTitle, language) {
     const data = JSON.stringify(responseData);
-
-    const subtitleId = data.match(subtitleIdRegex.source.replace('english', language));
+    const regex = new RegExp(subtitleIdRegex.source.replace('english', language),'g')
+    
+    const subtitleIds = data.match(regex);
+  
+    
     const movieName = movieTitle.toLowerCase().split(" ").join("-");
-    const zipURL = `${constants.subtitleUrl}${movieName}-${subtitleId}.zip`;
-    return zipURL;
+    const zipURLS =  subtitleIds.map((element) => `${constants.subtitleUrl}${movieName}-${element}.zip`);
+    return zipURLS;
     
 }
 

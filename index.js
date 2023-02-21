@@ -32,8 +32,6 @@ const argv = yargs
 
 const fileName = path.basename(argv._[1]); // parse command line argument and get fileName
 const dirName = path.dirname(argv._[1]);
-console.log(fileName);
-console.log(dirName);
 const language = argv.language;
 
 guessit(fileName)
@@ -45,20 +43,33 @@ guessit(fileName)
 
     const response = await getData(`${constants.baseUrl}${searchString}`);
 
-    const subtitleURL = stringUtils.findSubtitleUrl(
+    const subtitleURLS = stringUtils.findSubtitleUrl(
       response,
       data.title,
       language
     );
 
-    await getSubtitle(subtitleURL, fileName);
-    await extractFile(`${fileName}.zip`);
-    const subtitleFileName = await findByFileExtension();
-    languageEncoding(subtitleFileName).then((fileInfo) =>
-      console.log(fileInfo)
-    );
+    for  ( subtitleURL of subtitleURLS) {
+      await getSubtitle(subtitleURL, fileName);
+      await extractFile(`${fileName}.zip`);
+      const subtitleFileName = await findByFileExtension();
+       const result = await languageEncoding(subtitleFileName).then((fileInfo) => {
+        if (fileInfo.language !== language) {
+          console.log('Language does not match trying other options');
+          fs.rmSync(subtitleFileName);
+          console.log(`${subtitleFileName} deleted`);
+        
+        } else {
+          console.log(`${subtitleFileName} matched and downloaded successfully`);
+          return true;
+        }
+       })
+       if (result === true) {
+           break;
 
-    process.stdout.write("true");
+       }
+      }
+      process.stdout.write('true');
   })
   .catch((e) => console.log(e));
 

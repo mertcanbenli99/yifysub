@@ -3,7 +3,7 @@ const constants = {
   baseUrl: "https://yifysubtitles.org/",
   subtitleUrl: "https://yifysubtitles.ch/subtitle/",
   imdbRegex: /movie-imdb\/tt\d+/,
-  subtitleIdRegex: /\d+-english-yify-\d+/
+  subtitleIdRegex: /\d+-english-yify-\d+/g
 }
 
 module.exports = constants;
