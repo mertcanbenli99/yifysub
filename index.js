@@ -14,24 +14,24 @@ const { readdir } = require("fs/promises");
 const languageEncoding = require("detect-file-encoding-and-language");
 
 const argv = yargs
-  .command("download", "Download a file", (yargs) => {
-    yargs
-      .option("language", {
-        alias: "l",
-        describe: "Language of the file to download",
-        default: "english",
-      })
-      .positional("filename", {
-        describe: "Name of the file to download",
-        demandOption: true,
-        type: "string",
-      });
+  .command("download <filename>", "Download a file", (yargs) => {
+    yargs.option("language", {
+      alias: "l",
+      describe: "Language of the file to download",
+      default: "english",
+    });
   })
   .demandCommand(1, "You need at least one command before moving on")
   .help().argv;
 
-const fileName = path.basename(argv._[1]); // parse command line argument and get fileName
-const dirName = path.dirname(argv._[1]);
+if (argv._[0] !== "download") {
+  console.error("Invalid command. Please use the 'download' command.");
+  yargs.showHelp();
+  yargs.exit();
+}
+
+const fileName = path.basename(argv.filename); // parse command line argument and get fileName
+const dirName = path.dirname(argv.filename);
 const language = argv.language;
 
 guessit(fileName)
@@ -49,27 +49,29 @@ guessit(fileName)
       language
     );
 
-    for  ( subtitleURL of subtitleURLS) {
+    for (subtitleURL of subtitleURLS) {
       await getSubtitle(subtitleURL, fileName);
       await extractFile(`${fileName}.zip`);
       const subtitleFileName = await findByFileExtension();
-       const result = await languageEncoding(subtitleFileName).then((fileInfo) => {
-        if (fileInfo.language !== language) {
-          console.log('Language does not match trying other options');
-          fs.rmSync(subtitleFileName);
-          console.log(`${subtitleFileName} deleted`);
-        
-        } else {
-          console.log(`${subtitleFileName} matched and downloaded successfully`);
-          return true;
+      const result = await languageEncoding(subtitleFileName).then(
+        (fileInfo) => {
+          if (fileInfo.language !== language) {
+            console.log("Language does not match trying other options");
+            fs.rmSync(subtitleFileName);
+            console.log(`${subtitleFileName} deleted`);
+          } else {
+            console.log(
+              `${subtitleFileName} matched and downloaded successfully`
+            );
+            return true;
+          }
         }
-       })
-       if (result === true) {
-           break;
-
-       }
+      );
+      if (result === true) {
+        break;
       }
-      process.stdout.write('true');
+    }
+    process.stdout.write("true");
   })
   .catch((e) => console.log(e));
 
